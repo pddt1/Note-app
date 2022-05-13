@@ -11,30 +11,19 @@
     padding: 0 16px;
   }
   
-  header {
+  .navbar {
     background-color: #8E9775;
     margin: auto -16px;
     padding: 16px 32px;
     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.3);
   }
   
-  header h1 {
+  a h1, h5 {
     color: #fff;
     font-family: "McLaren", cursive;
     font-weight: 200;
   }
   
-  footer {
-    position: absolute;
-    text-align: center;
-    bottom: 0;
-    width: 100%;
-    height: 2.5rem;
-  }
-  
-  footer p {
-    color: #4A503D;
-  }
   .note {
     background: #fff;
     border-radius: 7px;
@@ -69,7 +58,7 @@
   button:hover{
     background-color: grey;
   }
-  form {
+  .createArea{
     position: relative;
     width: 480px;
     margin: 30px auto 20px auto;
@@ -78,8 +67,7 @@
     border-radius: 7px;
     box-shadow: 0 1px 5px rgb(138, 137, 137);
   }
-  form input,
-  form textarea {
+  .inputCreateArea{
     width: 100%;
     border: none;
     padding: 4px;
@@ -88,7 +76,7 @@
     font-family: inherit;
     resize: none;
   }
-  form button {
+  .buttonCreateArea {
     position: absolute;
     right: 18px;
     bottom: -18px;
@@ -102,4 +90,6 @@
     cursor: pointer;
     outline: none;
   }
-  
+ .welcomeText{
+  padding: .5rem;
+ }

@@ -1,60 +1,32 @@
-const express=require("express");
-const bodyParser= require('body-parser');
-const mongoose= require('mongoose');
-const _=require('lodash');
-const cors = require("cors");
+const express= require('express');
+const cors= require('cors');
 const app=express();
+const dbConfig= require('./config/db.config');
 app.use(cors());
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(express.json({
-    type:['application/json','text/plain']
-}))
-mongoose.connect("mongodb://localhost:27017/notes", {useNewUrlParser: true});
-const notesSchema={
-    nid: String,
-    title: String,
-    content: String
-};
-const Note= mongoose.model('Note',notesSchema);
+// parse requests of content-type - application/json
+app.use(express.json());
+// parse requests of content-type - application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true }));
+require('./routes/auth.routes')(app);
+require('./routes/user.routes')(app);
+const db = require("./models");
+//`mongodb://${dbConfig.HOST}:${dbConfig.PORT}/${dbConfig.DB}`
+db.mongoose
+  .connect(`mongodb+srv://${dbConfig.HOST}/${dbConfig.DB}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
+  .then(() => {
+    console.log("Successfully connect to MongoDB.");
+  })
+  .catch(err => {
+    console.error("Connection error", err);
+    process.exit();
+  });
 
-app.post('/post',(req,res)=>{
-        const data=req.body;
-        const note= new Note({
-        nid: data.id,
-        title: data.title,
-        content: data.content
-        });
-        note.save().then(()=>{
-            res.send(JSON.stringify({"status": 200, "error": null, "response": 'ok'}));
-        }).catch(err=>{
-            res.send(JSON.stringify({"status": 400, "error": 1, "response": err}));
-        });
-    
-});
 
-app.delete('/notes/:nid',(req,res)=>{
-    const nid = _.capitalize(req.params.nid);
-    Note.findOneAndRemove(nid,(err)=>{
-        if(err) res.send(JSON.stringify({"status": 400, "error": 1, "response": err}));
-        else res.send(JSON.stringify({"status": 200, "error": null, "response": 'ok'}));
-    });
-});
-
-app.get('/',(req,res)=>{
-        Note.find({},(err,foundNotes)=>{
-            if(err){
-                res.send(JSON.stringify({"status": 400, "error": 1, "response": err}));
-            }
-            else{
-                if(foundNotes.length!==0){
-                    const listNotes=foundNotes;
-                    res.send(JSON.stringify({"status": 200, "error": null, "response": listNotes}));
-                }
-            }
-        });
-
-})
-
-app.listen(9000, function() {
-    console.log("Server started on port 9000");
+  // set port, listen for requests
+  const PORT = process.env.PORT || 8080;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}.`);
   });

@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import AddIcon from '@mui/icons-material/Add';
 import { Zoom } from '@mui/material';
-import axios from "axios";
-import getUniqueString from '../helper/getUniqueString';
+import UserService from '../services/user.service';
+import AuthService from '../services/auth.service';
+import Alert from '@mui/material/Alert';
 
-const BASE="http://localhost:9000";
 function CreateArea(props) {
   const [isExpanded,setExpanded]=useState(false);
   const [note, setNote] = useState({
     title: "",
     content: ""
   });
+  const [resMessage, setResMessage] = useState("");
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -24,26 +25,30 @@ function CreateArea(props) {
   }
 
   function submitNote(event) {
-    note['id']=getUniqueString();
-    console.log(note);
-    axios.post(BASE+'/post',note).then(()=>{
-      props.onAdd(note);
+    event.preventDefault();
+    const user=AuthService.getCurrentUser();
+    note["username"]=user.username;
+    UserService.addNote(note).then(res=>{
+      const addedNote=res.data.data;
+      // console.log(addedNote);
+      props.onAdd(addedNote);
       setNote({
         title: "",
         content: ""
       });
-      window.history.pushState({},null,"/");
-    }).catch(err=>{
+
+    },err=>{
       console.log(err);
+      setResMessage(err.response.data.message);
     })
-    event.preventDefault();
   }
 
 
   return (
     <div>
-      <form>
+      <form className="createArea">
         {isExpanded && (<input
+          className="inputCreateArea"
           name="title"
           onChange={handleChange}
           value={note.title}
@@ -51,6 +56,7 @@ function CreateArea(props) {
         />)}
         <textarea
           name="content"
+          className="inputCreateArea"
           onClick={()=> setExpanded(true)}
         
           onChange={handleChange}
@@ -59,10 +65,15 @@ function CreateArea(props) {
           rows={isExpanded ? 3:1}
         />
         <Zoom in={isExpanded}>
-          <button onClick={submitNote}><AddIcon/></button>
+          <button onClick={submitNote} className="buttonCreateArea"><AddIcon/></button>
         </Zoom>
         
       </form>
+      {
+        resMessage && (
+          <Alert onClose={() => {setResMessage("");}}>resMessage</Alert>
+        )
+      }
     </div>
   );
 }
