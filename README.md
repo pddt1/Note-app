@@ -4,4 +4,6 @@
 * Add Note
 * Delete Note
 ***
+Using: NodeJS, ReactJS, MongoDB
+***
 ### Demo: https://youtu.be/NrWZjv4qRGc
