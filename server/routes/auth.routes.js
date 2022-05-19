@@ -8,7 +8,7 @@ module.exports = function(app) {
       );
       next();
     });
-    //loi o day verifySignUp
+
     app.post(
       "/api/auth/signup",
       [
